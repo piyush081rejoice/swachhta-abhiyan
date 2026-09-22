@@ -6,6 +6,7 @@ import { pdfService } from '../services/pdfService';
 export default function PdfPreviewModal({ isOpen, onClose, formData }) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const [viewMode, setViewMode] = useState('template'); // 'template' or 'vector'
 
   if (!isOpen || !formData) return null;
 
@@ -52,7 +53,31 @@ export default function PdfPreviewModal({ isOpen, onClose, formData }) {
           </div>
 
           <div className="flex items-center gap-2">
-          
+            {/* View Mode Toggle */}
+            <div className="flex items-center bg-slate-100 p-0.5 rounded-lg text-xs font-semibold">
+              <button
+                type="button"
+                onClick={() => setViewMode('template')}
+                className={`px-2.5 py-1 rounded-md transition-all ${
+                  viewMode === 'template'
+                    ? 'bg-white text-emerald-700 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                અધિકૃત PDF
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('vector')}
+                className={`px-2.5 py-1 rounded-md transition-all ${
+                  viewMode === 'vector'
+                    ? 'bg-white text-emerald-700 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                વેક્ટર પ્રિન્ટ
+              </button>
+            </div>
 
             <button
               type="button"
@@ -65,20 +90,20 @@ export default function PdfPreviewModal({ isOpen, onClose, formData }) {
           </div>
         </div>
 
-        {/* Modal Body - Clean PDF Document Display */}
+        {/* Modal Body - PDF Document Display */}
         <div className="modal-body pdf-preview-body">
           <div className="pdf-sheet-wrapper">
-            <SankalpPatraDocument id={docId} data={formData} mode="vector" />
+            <SankalpPatraDocument id={docId} data={formData} mode={viewMode} />
           </div>
         </div>
 
         {/* Modal Footer */}
         <div className="modal-footer justify-between">
-          
+          <div className="text-xs text-slate-500 hidden sm:block">
+            {viewMode === 'template' ? '📄 ૧૬-૦૯-૨૦૨૬ અધિકૃત સરકારી ટેમ્પલેટ' : '🎨 હાઇ-ડેફિનેશન વેક્ટર પ્રિન્ટ ફોર્મેટ'}
+          </div>
 
           <div className="flex items-center gap-2.5">
-            
-
             <button
               type="button"
               onClick={handleDownload}

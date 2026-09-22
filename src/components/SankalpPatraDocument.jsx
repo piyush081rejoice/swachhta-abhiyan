@@ -14,11 +14,11 @@ export default function SankalpPatraDocument({ data, id = 'sankalp-patra-doc', m
   const signature = data.signature_data;
 
   if (mode === 'template') {
-    // Exact official PDF template overlay matching the provided image
+    // Exact official PDF template overlay matching Sankalp Patra_16-09-2026.pdf
     return (
       <div id={id} className="sankalp-doc-template-container">
         <img
-          src="/assets/sankalp_patra_template.png"
+          src="/assets/sankalp_patra_template.jpg"
           alt="Swachhata Sankalp Patra Template"
           className="sankalp-doc-bg"
           crossOrigin="anonymous"
@@ -61,7 +61,7 @@ export default function SankalpPatraDocument({ data, id = 'sankalp-patra-doc', m
 
         {/* 6. Officer Name (ઘર મુલાકાત લેનારનું નામ) */}
         <div className="overlay-field field-officer">
-          <span className="field-value font-semibold">{officerName}</span>
+          <span className="field-value">{officerName}</span>
         </div>
 
         {/* 7. Date (તારીખ) */}
@@ -71,7 +71,7 @@ export default function SankalpPatraDocument({ data, id = 'sankalp-patra-doc', m
 
         {/* 8. Municipality (મહાનગરપાલિકા / નગરપાલિકા) */}
         <div className="overlay-field field-muni">
-          <span className="field-value font-semibold">{municipality}</span>
+          <span className="field-value">{municipality}</span>
         </div>
       </div>
     );

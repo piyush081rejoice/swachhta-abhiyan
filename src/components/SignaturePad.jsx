@@ -25,10 +25,10 @@ export default function SignaturePad({ onSave, initialValue = null }) {
     canvas.height = height * ratio;
     ctx.scale(ratio, ratio);
 
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = 3.2;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    ctx.strokeStyle = '#0f172a';
+    ctx.strokeStyle = '#020617';
 
     if (initialValue) {
       const img = new Image();
@@ -36,6 +36,61 @@ export default function SignaturePad({ onSave, initialValue = null }) {
         ctx.drawImage(img, 0, 0, width, height);
       };
       img.src = initialValue;
+    }
+  };
+
+  const getTrimmedSignature = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return null;
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
+
+    try {
+      const imgData = ctx.getImageData(0, 0, width, height);
+      const data = imgData.data;
+      let minX = width, minY = height, maxX = 0, maxY = 0;
+      let found = false;
+
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const alpha = data[(y * width + x) * 4 + 3];
+          if (alpha > 15) {
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+            found = true;
+          }
+        }
+      }
+
+      if (!found) return null;
+
+      // Add small 8px padding around strokes
+      const pad = 12;
+      minX = Math.max(0, minX - pad);
+      minY = Math.max(0, minY - pad);
+      maxX = Math.min(width, maxX + pad);
+      maxY = Math.min(height, maxY + pad);
+
+      const trimW = maxX - minX;
+      const trimH = maxY - minY;
+
+      const trimmed = document.createElement('canvas');
+      trimmed.width = trimW;
+      trimmed.height = trimH;
+      const tCtx = trimmed.getContext('2d');
+
+      tCtx.drawImage(
+        canvas,
+        minX, minY, trimW, trimH,
+        0, 0, trimW, trimH
+      );
+
+      return trimmed.toDataURL('image/png');
+    } catch {
+      return canvas.toDataURL('image/png');
     }
   };
 
@@ -99,7 +154,8 @@ export default function SignaturePad({ onSave, initialValue = null }) {
     setIsDrawing(false);
     saveState();
     if (canvasRef.current && onSave) {
-      onSave(canvasRef.current.toDataURL('image/png'));
+      const trimmed = getTrimmedSignature();
+      onSave(trimmed || canvasRef.current.toDataURL('image/png'));
     }
   };
 
@@ -133,7 +189,10 @@ export default function SignaturePad({ onSave, initialValue = null }) {
     const img = new Image();
     img.onload = () => {
       ctx.drawImage(img, 0, 0, rect.width, rect.height);
-      if (onSave) onSave(canvas.toDataURL('image/png'));
+      if (onSave) {
+        const trimmed = getTrimmedSignature();
+        onSave(trimmed || canvas.toDataURL('image/png'));
+      }
     };
     img.src = previousState;
   };

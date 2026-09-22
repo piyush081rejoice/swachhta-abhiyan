@@ -8,6 +8,8 @@ import confetti from 'canvas-confetti';
 import SignaturePad from '../components/SignaturePad';
 import { sankalpService } from '../services/sankalpService';
 
+const SAMPLE_SIGNATURE = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="320" height="120" viewBox="0 0 320 120"><path d="M 25 75 Q 60 15, 95 65 T 160 55 Q 200 20, 235 70 T 295 45" stroke="%23020617" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M 55 90 Q 165 75, 280 85" stroke="%23020617" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>';
+
 export default function OfficerNewForm({ user, onNavigate, onPreviewPdf }) {
   const todayDate = new Date().toLocaleDateString('en-GB');
 
@@ -16,6 +18,7 @@ export default function OfficerNewForm({ user, onNavigate, onPreviewPdf }) {
   const [wardNo, setWardNo] = useState('');
   const [mobileNo, setMobileNo] = useState('');
   const [signatureData, setSignatureData] = useState(null);
+  const [sigKey, setSigKey] = useState(0);
 
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
@@ -26,6 +29,8 @@ export default function OfficerNewForm({ user, onNavigate, onPreviewPdf }) {
     setAddress('બી-૧૪, શિવશક્તિ સોસાયટી, રિંગ રોડ પાસે');
     setWardNo('૦૭');
     setMobileNo('9825012345');
+    setSignatureData(SAMPLE_SIGNATURE);
+    setSigKey(prev => prev + 1);
     setFormError('');
   };
 
@@ -35,6 +40,7 @@ export default function OfficerNewForm({ user, onNavigate, onPreviewPdf }) {
     setWardNo('');
     setMobileNo('');
     setSignatureData(null);
+    setSigKey(prev => prev + 1);
     setFormError('');
   };
 
@@ -102,6 +108,7 @@ export default function OfficerNewForm({ user, onNavigate, onPreviewPdf }) {
     setWardNo('');
     setMobileNo('');
     setSignatureData(null);
+    setSigKey(prev => prev + 1);
     setSubmittedData(null);
     setFormError('');
   };
@@ -406,7 +413,7 @@ export default function OfficerNewForm({ user, onNavigate, onPreviewPdf }) {
             </div>
 
             <div className="pt-1">
-              <SignaturePad onSave={setSignatureData} />
+              <SignaturePad key={sigKey} onSave={setSignatureData} initialValue={signatureData} />
             </div>
           </div>
 
